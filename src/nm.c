@@ -7,7 +7,7 @@
 int nm(char *ptr, struct stat *buf) {
     char class;
 
-    if (buf->st_size < 5) {
+    if (buf->st_size < 4) {
         ft_dprintf(2, "Could not read magic number\n");
         return (EXIT_FAILURE);
     }
@@ -20,10 +20,16 @@ int nm(char *ptr, struct stat *buf) {
         ft_dprintf(2, "error: file is not ELF\n");
         return (EXIT_FAILURE);
     }
+    if (buf->st_size < 5) {
+        ft_dprintf(2, "Could not read class number\n");
+        return (EXIT_FAILURE);
+    }
     class = ptr[EI_CLASS];
     if (class == ELFCLASS32) {
+        // handle_32()
         ;
     } else if (class == ELFCLASS64) {
+        // handle_64()
         ;
     } else {
         ft_dprintf(2, "File class '%d' not supported\n", class);
