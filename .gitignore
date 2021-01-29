@@ -1,0 +1,6 @@
+tests/__pycache__
+.vscode
+nm
+objs/
+libft/objs
+libft/libft.a
