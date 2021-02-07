@@ -35,7 +35,7 @@ SRC_DIR	:=	src
 VPATH	:=	$(SRC_DIR)
 
 # Srcs file names ##############################################################
-SRC_FILES	:=	nm.c
+SRC_FILES	:=	nm.c result_list.c
 
 #list of all .c files
 C_FILES	:=	$(SRC_FILES)
