@@ -61,7 +61,7 @@ DEPENDENCIES	:= $(addprefix $(OBJ_DIR)/,$(DEPS))
 .PHONY: all
 all: $(LIBFT_A) $(OBJ_DIR) $(NAME)
 	@echo
-	@./nm /usr/bin/nm
+	@./nm nm
 
 $(LIBFT_A): FORCE
 	@make -C $(LIBFT_DIR)
@@ -69,8 +69,6 @@ $(LIBFT_A): FORCE
 .PHONY: fsa
 fsa: $(SRCS) $(LIBS) $(INCLS)
 	@$(CC) $(CFLAGS) $(FSA_FLAGS) $(INCL_CMD) $(LIB_INCL) $(SRCS) $(LIBS) -o $(NAME)
-	@echo
-	@$(OPT) ./$(NAME) /usr/bin/nm
 
 .PHONY: val
 val: $(SRCS) $(LIBS) $(INCLS)
