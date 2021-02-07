@@ -30,7 +30,6 @@ int handle_64(char *map_start, size_t size)
     }
     header = (Elf64_Ehdr *)map_start;
     section_headers = (Elf64_Shdr *)((char *)map_start + header->e_shoff);
-    ft_printf("header strtab: %u\n", header->e_shstrndx);
     strtab = NULL;
     for (int i = 0; i < header->e_shnum; i++)
     {
@@ -38,6 +37,7 @@ int handle_64(char *map_start, size_t size)
         {
             if (section_headers[i].sh_type == SHT_STRTAB)
             {
+
                 strtab = (Elf64_Shdr *)(&section_headers[i]);
                 // ft_printf("%u\n", strtab->sh_offset);
                 // ft_printf("i: %d, strtab: %p\n", i, (void *)strtab);
@@ -62,25 +62,27 @@ int handle_64(char *map_start, size_t size)
     {
         if (symtab)
         {
-            Elf64_Sym *sym = (Elf64_Sym *)(map_start + symtab->sh_offset);
-            // char *str = (char *) (map_start + strtab->sh_offset);
+            Elf64_Sym *symbols = (Elf64_Sym *)(map_start + symtab->sh_offset);
+            struct result_list *head;
+            char type;
+
             for (size_t ii = 0; ii < nums; ii++)
             {
-                if (sym[ii].st_name)
+                Elf64_Sym sym = symbols[ii];
+                if (sym.st_name)
                 {
-                    if (sym[ii].st_shndx == SHN_UNDEF)
+                    Elf64_Shdr *strtab = elf_section(header, symtab->sh_link);
+                    char *name =
+                        (char *)header + strtab->sh_offset + sym.st_name;
+                    if (ELF64_ST_BIND(sym.st_info) != STB_LOCAL) // not correct condition !
                     {
-                        Elf64_Shdr *strtab = elf_section(header, symtab->sh_link);
-                        const char *name =
-                            (const char *)header + strtab->sh_offset + sym[ii].st_name;
-                        ft_printf("---%s---\n", name);
+                        type = 'T';
+                        insert_elem(&head, new_elem(name, sym.st_value, type));
                     }
-                    // if (sym[ii].st_info == STT_FUNC) {
-                    // ft_printf("---%s---\n", str + sym[ii].st_name);
-                    // }
-                    // ft_printf("%s\n", (char *)str + sym[ii].st_name);
                 }
             }
+            print_list(head);
+            free_list(head);
         }
         else
         {
@@ -93,7 +95,6 @@ int handle_64(char *map_start, size_t size)
         ft_dprintf(2, "error: no strtab found\n");
         return (EXIT_FAILURE);
     }
-
     return (EXIT_SUCCESS);
 }
 
@@ -105,33 +106,26 @@ int elf64_check_supported(char *ptr, size_t file_size)
     {
         return (EXIT_FAILURE);
     }
-    hdr = (Elf64_Ehdr *) ptr;
-    if (hdr->e_ident[EI_MAG0] != ELFMAG0) {
+    hdr = (Elf64_Ehdr *)ptr;
+    if (hdr->e_ident[EI_MAG0] != ELFMAG0)
         return (EXIT_FAILURE);
-    }
-    if (hdr->e_ident[EI_MAG1] != ELFMAG1) {
+    if (hdr->e_ident[EI_MAG1] != ELFMAG1)
         return (EXIT_FAILURE);
-    }
-    if (hdr->e_ident[EI_MAG2] != ELFMAG2) {
+    if (hdr->e_ident[EI_MAG2] != ELFMAG2)
         return (EXIT_FAILURE);
-    }
-    if (hdr->e_ident[EI_MAG3] != ELFMAG3) {
+    if (hdr->e_ident[EI_MAG3] != ELFMAG3)
         return (EXIT_FAILURE);
-    }
-    if (hdr->e_ident[EI_CLASS] != ELFCLASS64) {
+    if (hdr->e_ident[EI_CLASS] != ELFCLASS64)
         return (EXIT_FAILURE);
-    }
-    if (hdr->e_ident[EI_DATA] != ELFDATA2LSB) {
+    if (hdr->e_ident[EI_DATA] != ELFDATA2LSB)
         return (EXIT_FAILURE);
-    }
     // if (hdr->e_machine != EM_386) {
-        // return (EXIT_FAILURE);
+    // return (EXIT_FAILURE);
     // }
-    if (hdr->e_ident[EI_VERSION] != EV_CURRENT) {
+    if (hdr->e_ident[EI_VERSION] != EV_CURRENT)
         return (EXIT_FAILURE);
-    }
     // if (hdr->e_type != ET_REL && hdr->e_type != ET_EXEC) {
-        // return (EXIT_FAILURE);
+    // return (EXIT_FAILURE);
     // }
     return (EXIT_SUCCESS);
 }
