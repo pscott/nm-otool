@@ -63,7 +63,7 @@ int handle_64(char *map_start, size_t size)
         if (symtab)
         {
             Elf64_Sym *symbols = (Elf64_Sym *)(map_start + symtab->sh_offset);
-            struct result_list *head;
+            struct result_list *head = NULL;
             char type;
 
             for (size_t ii = 0; ii < nums; ii++)
